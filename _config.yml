@@ -1,0 +1,30 @@
+# Site settings
+title: Opsecured
+description: >-
+  Notes on security operations, engineering, and research.
+url: "https://blog.opsecured.net"
+baseurl: ""
+timezone: America/Los_Angeles
+
+# Theme: minima with the dark skin.
+# Skins require minima 3.x, which GitHub Pages does not bundle (it ships
+# skinless minima 2.5.1), so the theme is pulled from its repo via
+# jekyll-remote-theme — supported by the native Pages build. Pinned to a
+# specific commit so upstream changes can't break the site; to update,
+# swap in a newer SHA from https://github.com/jekyll/minima/commits/master
+remote_theme: jekyll/minima@4de322363fca5927e6f4012cb94f6dad69ab5e6c
+minima:
+  skin: dark  # other options: classic, auto, solarized, solarized-light, solarized-dark
+
+plugins:
+  - jekyll-remote-theme
+  - jekyll-feed
+  - jekyll-seo-tag
+
+# Front-matter defaults: posts only need `title` and `date`.
+defaults:
+  - scope:
+      path: ""
+      type: posts
+    values:
+      layout: post
