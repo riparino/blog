@@ -1,7 +1,7 @@
 # Site settings
 title: Opsecured
 description: >-
-  Notes on security operations, engineering, and research.
+  Notes on security operations, engineering, and research. All opinions expressed in this blog are my own and not that of my employers.
 url: "https://blog.opsecured.net"
 baseurl: ""
 timezone: America/Los_Angeles
