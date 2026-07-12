@@ -1,0 +1,23 @@
+# Jekyll drops posts dated in the future at build time, but GitHub Pages only
+# rebuilds the site when something is pushed — so a future-dated post would
+# stay hidden until the next unrelated commit. This workflow requests a Pages
+# build once a day, just after the 12:00 -0700 timestamp our posts use, which
+# publishes any post whose date has arrived. Runs on days with nothing queued
+# are harmless no-op rebuilds.
+name: Publish scheduled posts
+on:
+  schedule:
+    - cron: "10 19 * * *" # 19:10 UTC = 12:10 PM -0700
+  workflow_dispatch:
+permissions:
+  pages: write
+jobs:
+  rebuild:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Request a GitHub Pages build
+        run: |
+          curl -sS --fail -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/repos/${{ github.repository }}/pages/builds"

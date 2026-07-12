@@ -3,9 +3,9 @@ title: "The Passkey Enrollment Log Finally Earns Its Keep: Hunting O-UNC-066"
 date: 2026-07-18 12:00:00 -0700
 ---
 
-Last time, I argued that most log sources are liabilities with a recurring invoice — telemetry you collect on reflex and keep on faith, that never traces back to a detection anyone modeled. A few people wrote in asking for the inverse: a source that actually earns its keep. Here's one, and it happens to sit in front of a campaign that's live right now.
+Last week I argued that most log sources are liabilities with a recurring invoice: telemetry you collect on reflex and keep on faith, that never traces back to a detection anyone modeled. A few people wrote in asking for the inverse: a source that actually earns its keep. Here's one, and it happens to sit in front of a campaign that's live right now.
 
-The source is the Entra authentication-methods audit stream, and the threat that makes it worth the money is a group that turns your passkey rollout — the thing your identity team has been begging users to adopt — into the phishing lure itself.
+The source is the Entra authentication-methods audit stream, and the threat that makes it worth the money is a group that turns your passkey rollout, the thing your identity team has been begging users to adopt, into the phishing lure itself.
 
 ## The actor
 
@@ -13,15 +13,15 @@ Okta Threat Intelligence published on this cluster on July 6, 2026. They track i
 
 Victimology, per Okta, spans food and beverage, technology, healthcare, automotive, construction, and aviation. That spread tells you what this is: not a targeted intrusion set picking a single vertical, but a repeatable social-engineering script run at scale against whichever help desk or user picks up the phone.
 
-Attribution confidence here is reasonable but worth stating plainly: Okta observed the phishing kit and the infrastructure directly; the Pink/The Com linkage comes from Unit 42; and Okta notes it did not directly confirm a Microsoft account compromise from its own vantage point — it's inferring the account-takeover objective from the kit's design. If you have Recorded Future, this is the first place to spend your pivots: confirm the DLS victim list against the sectors above, and validate the Com affiliation against RF's own clustering rather than taking the vendor label at face value.
+Attribution confidence here is reasonable but worth stating plainly: Okta observed the phishing kit and the infrastructure directly; the Pink/The Com linkage comes from Unit 42; and Okta notes it did not directly confirm a Microsoft account compromise from its own vantage point, so it's inferring the account-takeover objective from the kit's design. If you have Recorded Future, this is the first place to spend your pivots: confirm the DLS victim list against the sectors above, and validate the Com affiliation against RF's own clustering rather than taking the vendor label at face value.
 
 ## The technique: weaponizing the security upgrade
 
-As of May 2026, Microsoft admins can run passkey registration campaigns — sign-in "nudges" that prompt users to enroll a passkey — and in some configurations those nudges are on by default, which means the pretext already exists inside the tenant. The actor just has to phone a user and say the quiet part your own IT team has been saying for months: you need to set up a passkey.
+As of May 2026, Microsoft admins can run passkey registration campaigns, the sign-in "nudges" that prompt users to enroll a passkey, and in some configurations those nudges are on by default, which means the pretext already exists inside the tenant. The actor just has to phone a user and say the quiet part your own IT team has been saying for months: you need to set up a passkey.
 
-The delivery is voice phishing (vishing). The actor registers domains with the word `passkey` baked in — Okta listed `assignpasskey[.]com`, `deploypasskey[.]com`, `passkeydeploy[.]com`, `passkeyadd[.]com`, `setpasskey[.]com` — and stands up per-target subdomains that mimic the victim org's Entra sign-in page. Generic Microsoft chrome loads from Microsoft's real CDN; the victim-specific logo and background are pre-staged in the kit backend. Infrastructure has been hosted on DDoS-Guard (AS57724) and IQWeb FZ-LLC (AS59692).
+The delivery is voice phishing (vishing). The actor registers domains with the word `passkey` baked in (Okta listed `assignpasskey[.]com`, `deploypasskey[.]com`, `passkeydeploy[.]com`, `passkeyadd[.]com`, `setpasskey[.]com`) and stands up per-target subdomains that mimic the victim org's Entra sign-in page. Generic Microsoft chrome loads from Microsoft's real CDN; the victim-specific logo and background are pre-staged in the kit backend. Infrastructure has been hosted on DDoS-Guard (AS57724) and IQWeb FZ-LLC (AS59692).
 
-The kit is where it gets unusual, because it isn't a transparent adversary-in-the-middle proxy — the pattern most of your AiTM detections are tuned for — but an operator-controlled PHP panel. A human operator steers the victim through the auth stages in near real time using a one-second heartbeat polling loop, adapting the page flow to whatever MFA the victim actually gets challenged for: TOTP, push with number matching, SMS OTP. The documented kit stages: `/gate` (anti-analysis checks), `/identify` (username), `/password` (credentials POSTed to `/backend.php`), then `/processing` (a stall screen while the operator replays the creds against the real Microsoft login). There's even a decoy step asking the user to save and confirm a word from a BIP-39 seed phrase — which has no role in real Entra passkey enrollment and appears to exist purely to make the ceremony feel legitimate to a user who's never done this before.
+The kit is where it gets unusual, because it isn't a transparent adversary-in-the-middle proxy, which is the pattern most of your AiTM detections are tuned for, but an operator-controlled PHP panel. A human operator steers the victim through the auth stages in near real time using a one-second heartbeat polling loop, adapting the page flow to whatever MFA the victim actually gets challenged for: TOTP, push with number matching, SMS OTP. The documented kit stages: `/gate` (anti-analysis checks), `/identify` (username), `/password` (credentials POSTed to `/backend.php`), then `/processing` (a stall screen while the operator replays the creds against the real Microsoft login). There's even a decoy step asking the user to save and confirm a word from a BIP-39 seed phrase — which has no role in real Entra passkey enrollment and appears to exist purely to make the ceremony feel legitimate to a user who's never done this before.
 
 The endgame: while the victim thinks they're enrolling a passkey, the operator enrolls their own passkey against the victim's account, and can name it something benign so the legitimate Microsoft "new passkey registered" email doesn't raise alarm.
 
@@ -37,9 +37,9 @@ Same discipline as always: threat model, then detection requirement, then teleme
 
 Threat: an attacker socially engineers a user into enrolling an attacker-controlled passkey (or any auth method), then uses the account to exfiltrate from SharePoint/OneDrive.
 
-Detection requirement: alert when a security-info / passkey registration happens in a context that doesn't look like a normal user self-service enrollment — specifically, shortly after a sign-in from infrastructure or a network the user has never used, with enough context that an analyst can act without rebuilding the case.
+Detection requirement: alert when a security-info / passkey registration happens in a context that doesn't look like a normal user self-service enrollment. Specifically, shortly after a sign-in from infrastructure or a network the user has never used, with enough context that an analyst can act without rebuilding the case.
 
-Telemetry requirement: the Entra authentication-methods audit events (in `AuditLogs`), sign-in context (`SigninLogs`), and file-operation logs for the exfil stage (`OfficeActivity`). All three are first-party and, if you're already ingesting Entra and M365 into Sentinel, already paid for — which is what a source earning its keep actually looks like.
+Telemetry requirement: the Entra authentication-methods audit events (in `AuditLogs`), sign-in context (`SigninLogs`), and file-operation logs for the exfil stage (`OfficeActivity`). All three are first-party and, if you're already ingesting Entra and M365 into Sentinel, already paid for, which is what a source earning its keep actually looks like.
 
 A note on grounding, because it's the whole point of the last post: I verified every table and column below against the Microsoft Azure Monitor table references before publishing. One thing I deliberately did not do is hardcode a nested JSON path for the method type (e.g. digging into `TargetResources[].modifiedProperties` to isolate "FIDO2" specifically). That structure varies and I couldn't verify a stable path, so keying a detection on it would be exactly the kind of assumed-field-name mistake that breaks silently. Instead the queries key on the verified operation names and correlate with sign-in context, which is the stronger signal anyway. If you want method-level granularity, sample your own tenant's records first and confirm the path before you trust it.
 
@@ -65,16 +65,16 @@ AuditLogs
 
 ### 2. Retro-hunt: were we already hit?
 
-This one is not a detection, and you should not deploy it as a scheduled analytic rule. It answers a single, backward-looking question you have exactly once — did this already happen to us before we knew the campaign existed? — and then it stops being useful.
+This one is not a detection, and you should not deploy it as a scheduled analytic rule. It answers a single, backward-looking question you have exactly once (did this already happen to us before we knew the campaign existed?) and then it stops being useful.
 
 The reason it works at all is a quirk of the kit's design. Because the panel operator replays the harvested credentials against the real Microsoft sign-in page from their own infrastructure, the sign-in Entra records carries the operator's IP and ASN, not the victim's. The victim's browser only ever talks to the phishing domain, which never appears in your tenant's logs. So the operator's hosting is the thing you can actually see, and `SigninLogs.AutonomousSystemNumber` is where you see it.
 
-Run it once over as long a lookback as your retention allows — the campaign has been active since April, so 30 days is the floor, not the target — then triage every hit by hand and retire it.
+Run it once over as long a lookback as your retention allows. The campaign has been active since April, so 30 days is the floor rather than the target. Triage every hit by hand, then retire it.
 
 ```kusto
 // Retro-hunt only. Do NOT schedule this as an analytic rule.
 // Widen the 30d windows to match your retention; campaign dates to April 2026.
-let actorAsns = dynamic(["57724", "59692"]);  // DDoS-Guard, IQWeb — pull current infra from RF first
+let actorAsns = dynamic(["57724", "59692"]);  // DDoS-Guard, IQWeb: pull current infra from RF first
 let regs =
     AuditLogs
     | where TimeGenerated > ago(30d)
@@ -97,7 +97,7 @@ SigninLogs
 | order by RegTime desc
 ```
 
-Two caveats that matter. DDoS-Guard and IQWeb are shared hosters, so an ASN match is a reason to look, not proof of compromise — triage the hits, don't page on them. And pull the current infrastructure from Recorded Future before you run this, because the ASNs Okta published in July will not be the ASNs in use by the time you read this.
+Two caveats that matter. DDoS-Guard and IQWeb are shared hosters, so an ASN match is a reason to look, not proof of compromise, so triage the hits rather than paging on them. And pull the current infrastructure from Recorded Future before you run this, because the ASNs Okta published in July will not be the ASNs in use by the time you read this.
 
 The reason to keep this query firmly in the retro-hunt bucket is the failure mode if you don't. An IOC-anchored rule that runs on a schedule keeps returning zero results long after the actor has re-hosted, and a rule returning zero looks exactly like "we're clean" when it actually means "my indicators are stale." That's worse than having no rule, because it buys false confidence. Which is why the standing detection has to be the next one.
 
@@ -139,7 +139,7 @@ recentRegs
 | order by RegTime desc
 ```
 
-Tune the window and the baseline period to your environment. A legitimate first-time passkey enrollment on a new corporate egress will trip this — which is fine, because a human should glance at a passkey enrollment tied to a never-before-seen network anyway. That's the point of a source that earns its keep: the false positives are still worth a look.
+Tune the window and the baseline period to your environment. A legitimate first-time passkey enrollment on a new corporate egress will trip this, which is fine, because a human should glance at a passkey enrollment tied to a never-before-seen network anyway. That's the point of a source that earns its keep: the false positives are still worth a look.
 
 ### 4. The exfil stage
 
@@ -167,7 +167,7 @@ Correlate a hit here back to Query 3 on `UserId` / `UPN`. A first-seen-ASN sign-
 
 Detection is the backstop; the cheaper wins are upstream, and they're all in the vendor guidance:
 
-- Constrain who can self-enroll. Restrict passkey (FIDO2) self-service setup, and where feasible require enrollment from a managed/compliant device via Conditional Access. If a registration campaign is driving your rollout, scope it — don't leave the nudge on by default tenant-wide.
+- Constrain who can self-enroll. Restrict passkey (FIDO2) self-service setup, and where feasible require enrollment from a managed/compliant device via Conditional Access. If a registration campaign is driving your rollout, scope it rather than leaving the nudge on by default tenant-wide.
 - Treat inbound "enroll a passkey" calls as hostile by default. Any passkey/MFA enrollment request that originates from a phone call the user didn't initiate should be verified out-of-band through a known channel before anyone touches a URL.
 - Verify the help desk, both directions. Establish a scripted way for users to confirm they're actually talking to IT, and for IT to confirm the user, before any credential change.
 - Audit existing passkeys on privileged accounts. Don't assume "MFA is on" means the account is clean. Review which passkeys are enrolled, and flag names that look off or enrollments you can't tie to a known device.
