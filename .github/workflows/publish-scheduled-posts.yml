@@ -5,7 +5,7 @@
 # use), so a post queued for today goes live on schedule.
 #
 # GitHub cron is UTC-only and can't follow DST, so both possible UTC offsets
-# fire and the guard below keeps exactly one run inside the 4:45-5:15 AM
+# fire and the guard below keeps exactly one run inside the 4:45-6:00 AM
 # Pacific window; the other exits without building. Manual runs skip the guard.
 name: Publish scheduled posts
 on:
@@ -24,8 +24,8 @@ jobs:
           EVENT_NAME: ${{ github.event_name }}
         run: |
           hhmm=$((10#$(TZ=America/Los_Angeles date +%H%M)))
-          if [ "$EVENT_NAME" = "schedule" ] && { [ "$hhmm" -lt 445 ] || [ "$hhmm" -gt 515 ]; }; then
-            echo "Outside the 4:45-5:15 AM Pacific window (local HHMM: $hhmm); skipping."
+          if [ "$EVENT_NAME" = "schedule" ] && { [ "$hhmm" -lt 445 ] || [ "$hhmm" -gt 600 ]; }; then
+            echo "Outside the 4:45-6:00 AM Pacific window (local HHMM: $hhmm); skipping."
             exit 0
           fi
           curl -sS --fail -X POST \
