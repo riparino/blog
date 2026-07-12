@@ -1,14 +1,17 @@
 # Jekyll drops posts dated in the future at build time, but GitHub Pages only
 # rebuilds the site when something is pushed — so a future-dated post would
 # stay hidden until the next unrelated commit. This workflow requests a Pages
-# build once a day, just after the 05:00 -0700 timestamp our posts use, which
-# publishes any post whose date has arrived. Runs on days with nothing queued
-# are harmless no-op rebuilds.
+# build every morning just after 5:00 AM Pacific (the timestamp our posts
+# use), so a post queued for today goes live on schedule.
+#
+# GitHub cron is UTC-only and can't follow DST, so both possible UTC offsets
+# fire and the guard below keeps exactly one run inside the 4:45-5:15 AM
+# Pacific window; the other exits without building. Manual runs skip the guard.
 name: Publish scheduled posts
 on:
   schedule:
-    - cron: "10 12 * * *" # 12:10 UTC = 5:10 AM PDT
-    - cron: "10 13 * * *" # 13:10 UTC = 5:10 AM PST, covers winter-stamped posts
+    - cron: "1 12 * * *" # 5:01 AM Pacific during daylight time (UTC-7)
+    - cron: "1 13 * * *" # 5:01 AM Pacific during standard time (UTC-8)
   workflow_dispatch:
 permissions:
   pages: write
@@ -17,7 +20,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Request a GitHub Pages build
+        env:
+          EVENT_NAME: ${{ github.event_name }}
         run: |
+          hhmm=$((10#$(TZ=America/Los_Angeles date +%H%M)))
+          if [ "$EVENT_NAME" = "schedule" ] && { [ "$hhmm" -lt 445 ] || [ "$hhmm" -gt 515 ]; }; then
+            echo "Outside the 4:45-5:15 AM Pacific window (local HHMM: $hhmm); skipping."
+            exit 0
+          fi
           curl -sS --fail -X POST \
             -H "Accept: application/vnd.github+json" \
             -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \

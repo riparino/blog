@@ -3,7 +3,7 @@ title: "Detection Altitude Is a Collection Strategy"
 date: 2026-07-14 05:00:00 -0700
 ---
 
-Two posts ago I argued that you should derive your telemetry backward (threat model, then detection requirement, then telemetry requirement, then logging architecture) and stop collecting on reflex. Last week I put a live actor through that pipeline and showed the Entra passkey-enrollment stream earning its place. What I didn't say in either post is that the whole derivation rests on a hidden assumption, and if that assumption doesn't hold, the argument collapses. This post is about the assumption.
+Two posts ago I argued that you should derive your telemetry backward (threat model, then detection requirement, then telemetry requirement, then logging architecture) and stop collecting on reflex. In my last post I put a live actor through that pipeline and showed the Entra passkey-enrollment stream earning its place. What I didn't say in either post is that the whole derivation rests on a hidden assumption, and if that assumption doesn't hold, the argument collapses. This post is about the assumption.
 
 ## The unstated dependency
 
@@ -19,7 +19,7 @@ The difference comes down to what constrains each one. An indicator is an accide
 
 A behavior is constrained by the adversary's objective and by the physics of your environment, and both of those you can reason about ahead of time. To take over an identity and steal data, an attacker has to authenticate, has to add or alter an authentication method or token to persist, and has to touch the data. Those aren't stylistic choices; they're load-bearing steps in the objective. Strip away the specific kit and the invariant remains.
 
-Last week's passkey campaign is one skin stretched over that skeleton. Storm-2949's MFA-fatigue-into-SSPR play is a different skin over the same bones. Whatever runs this pattern next quarter with fresh infrastructure and a new lure is a third. If your detection keys on the skeleton, you catch all three; if it keys on a skin, you catch one and wait to be told about the next.
+The previous post's passkey campaign is one skin stretched over that skeleton. Storm-2949's MFA-fatigue-into-SSPR play is a different skin over the same bones. Whatever runs this pattern next quarter with fresh infrastructure and a new lure is a third. If your detection keys on the skeleton, you catch all three; if it keys on a skin, you catch one and wait to be told about the next.
 
 ## The Pyramid of Pain, pointed at the wrong axis on purpose
 
@@ -33,7 +33,7 @@ Move up the pyramid and collection becomes a design problem with a right answer.
 
 ## The whole argument lives in two queries
 
-I already shipped the worked example last week without naming it as one. The passkey post carried two sign-in-correlated queries, and the difference between them is exactly this axis.
+I already shipped the worked example in the last post without naming it as one. The passkey post carried two sign-in-correlated queries, and the difference between them is exactly this axis.
 
 The retro-hunt query keyed on the actor's ASNs, DDoS-Guard and IQWeb, which is the infrastructure Okta published. That's a skin, near the bottom of the pyramid, it's disposable by design, and I told you to run it once and throw it away precisely because the moment the actor re-hosts it goes silent and starts lying to you about being clean. It depends on an indicator I can only know after someone else caught the campaign.
 

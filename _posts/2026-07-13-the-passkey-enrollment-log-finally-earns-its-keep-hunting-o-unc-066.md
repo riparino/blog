@@ -3,7 +3,7 @@ title: "The Passkey Enrollment Log Finally Earns Its Keep: Hunting O-UNC-066"
 date: 2026-07-13 05:00:00 -0700
 ---
 
-Last week I argued that most log sources are liabilities with a recurring invoice: telemetry you collect on reflex and keep on faith, that never traces back to a detection anyone modeled. A few people wrote in asking for the inverse: a source that actually earns its keep. Here's one, and it happens to sit in front of a campaign that's live right now.
+In my previous post I argued that most log sources are liabilities with a recurring invoice: telemetry you collect on reflex and keep on faith, that never traces back to a detection anyone modeled. A few people wrote in asking for the inverse: a source that actually earns its keep. Here's one, and it happens to sit in front of a campaign that's live right now.
 
 The source is the Entra authentication-methods audit stream, and the threat that makes it worth the money is a group that turns your passkey rollout, the thing your identity team has been begging users to adopt, into the phishing lure itself.
 
