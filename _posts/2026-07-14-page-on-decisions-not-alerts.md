@@ -1,6 +1,6 @@
 ---
 title: "Page on Decisions, Not Alerts"
-date: 2026-07-15 05:00:00 -0700
+date: 2026-07-14 05:00:00 -0700
 tags: [sentinel, soc, detection-engineering, llm, triage, ai]
 ---
 

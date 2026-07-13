@@ -1,6 +1,6 @@
 ---
 title: "Detection Altitude Is a Collection Strategy"
-date: 2026-07-14 05:00:00 -0700
+date: 2026-07-15 05:00:00 -0700
 ---
 
 Two posts ago I argued that you should derive your telemetry backward (threat model, then detection requirement, then telemetry requirement, then logging architecture) and stop collecting on reflex. In my last post I put a live actor through that pipeline and showed the Entra passkey-enrollment stream earning its place. What I didn't say in either post is that the whole derivation rests on a hidden assumption, and if that assumption doesn't hold, the argument collapses. This post is about the assumption.
