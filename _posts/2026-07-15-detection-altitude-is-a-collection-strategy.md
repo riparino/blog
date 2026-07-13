@@ -3,7 +3,7 @@ title: "Detection Altitude Is a Collection Strategy"
 date: 2026-07-15 05:00:00 -0700
 ---
 
-Two posts ago I argued that you should derive your telemetry backward (threat model, then detection requirement, then telemetry requirement, then logging architecture) and stop collecting on reflex. In my last post I put a live actor through that pipeline and showed the Entra passkey-enrollment stream earning its place. What I didn't say in either post is that the whole derivation rests on a hidden assumption, and if that assumption doesn't hold, the argument collapses. This post is about the assumption.
+In [Every Log Source Is an Invoice](/2026/07/11/every-log-source-is-an-invoice.html) I argued that you should derive your telemetry backward (threat model, then detection requirement, then telemetry requirement, then logging architecture) and stop collecting on reflex. In [the passkey-enrollment post](/2026/07/13/the-passkey-enrollment-log-finally-earns-its-keep-hunting-o-unc-066.html) I put a live actor through that pipeline and showed the Entra stream earning its place. What I didn't say in either post is that the whole derivation rests on a hidden assumption, and if that assumption doesn't hold, the argument collapses. This post is about the assumption.
 
 ## The unstated dependency
 
