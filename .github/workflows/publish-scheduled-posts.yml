@@ -1,12 +1,6 @@
 # Jekyll drops posts dated in the future at build time, but GitHub Pages only
-# rebuilds the site when something is pushed — so a future-dated post would
-# stay hidden until the next unrelated commit. This workflow requests a Pages
-# build every morning just after 5:00 AM Pacific (the timestamp our posts
-# use), so a post queued for today goes live on schedule.
-#
-# GitHub cron is UTC-only and can't follow DST, so both possible UTC offsets
-# fire and the guard below keeps exactly one run inside the 4:45-6:00 AM
-# Pacific window; the other exits without building. Manual runs skip the guard.
+# rebuilds the site when something is pushed 
+
 name: Publish scheduled posts
 on:
   schedule:
