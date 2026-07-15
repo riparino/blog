@@ -1,6 +1,6 @@
 ---
 title: "The Payload Is a Sentence"
-date: 2026-07-16 05:00:00 -0700
+date: 2026-07-15 05:00:00 -0700
 tags: [detection-engineering, supply-chain, ai, llm, agents, prompt-injection]
 ---
 
