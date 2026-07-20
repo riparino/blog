@@ -4,7 +4,7 @@ date: 2026-07-20 05:00:00 -0700
 tags: [side-projects, rc-racing, tuning, cloudflare-workers, react]
 ---
 
-Five posts in nine days about telemetry economics, triage layers, and poisoned instruction files. This one is about none of that. On weekends I race 1/8-scale off-road buggies, and over the last couple of weekends I built two small tools for race day: a track-condition tuning sheet and a "when's my race up" clock. Both are on GitHub now ([rc-tuner](https://github.com/riparino/rc-tuner), [rc-timer](https://github.com/riparino/rc-timer)), both are small enough to read in one sitting, and neither contains a single line about security.
+Five posts in nine days about telemetry economics, triage layers, and poisoned instruction files. This one is about none of that. On weekends I race 1/8-scale off-road buggies, and over the last couple of weekends I built two small tools for race day: a track-condition tuning sheet and a "when's my race up" clock. Both are an evening's worth of code, and neither contains a single line about security.
 
 I set out to write a post that didn't either. I failed, because the same three habits I spend all week defending showed up at the pit table without being invited. I'll point at them when they appear, briefly, and then we can all go back to arguing about shock oil.
 
@@ -81,6 +81,6 @@ The last line of the tuning sheet reads: *change one thing at a time and let tir
 
 ---
 
-*Sources: kit baselines from the Mugen lube bag, the Tekno manuals, and Mayako's setup wiki, as marked in the rc-tuner README; everything with a ≈ is community practice, not factory spec. Both repos: [rc-tuner](https://github.com/riparino/rc-tuner), [rc-timer](https://github.com/riparino/rc-timer).*
+*Sources: kit baselines from the Mugen lube bag, the Tekno manuals, and Mayako's setup wiki, as marked in the tuner's README; everything with a ≈ is community practice, not factory spec.*
 
 *Disclosure: written with AI assistance, like the tools themselves. The setups, the scraped heat sheets, and the main event I missed with a diff in pieces are all mine.*
