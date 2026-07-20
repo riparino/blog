@@ -38,7 +38,7 @@ Two smaller things I want on the record. First, when the factory has spoken, the
 
 The second tool exists because of a failure mode every club racer knows: you're races 14, 38, and 61 on an eighty-race day, LiveRC tells you what's *completed*, and somewhere around race 30 you wander to the pit table, open a diff, and hear your class called to the stand with your car in eight pieces.
 
-`whenup` started as a Python script polling LiveRC from a terminal and grew into a Cloudflare Worker anyone at the event can open on their phone. Track subdomain, driver name, done — the URL is shareable, it refreshes every 75 seconds, and each of your remaining races shows an ETA and a countdown. At twenty minutes out the row turns red and says GET READY, with an optional push notification.
+`rc-timer` (formerly titled `whenup`) started as a Python script polling LiveRC from a terminal and grew into a Cloudflare Worker anyone at the event can open on their phone. Track subdomain, driver name, done — the URL is shareable, it refreshes every 75 seconds, and each of your remaining races shows an ETA and a countdown. At twenty minutes out the row turns red and says GET READY, with an optional push notification.
 
 The part I actually care about is how the ETA is computed, because the obvious approach — multiply races remaining by "about eight minutes" — is a static assumption, and race days do not honor static assumptions. Instead the worker measures the day it's actually having:
 
