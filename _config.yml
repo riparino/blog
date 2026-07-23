@@ -15,6 +15,9 @@ timezone: America/Los_Angeles
 remote_theme: jekyll/minima@4de322363fca5927e6f4012cb94f6dad69ab5e6c
 minima:
   skin: dark  # other options: classic, auto, solarized, solarized-light, solarized-dark
+  social_links:
+    - { title: "opsecured on GitHub", icon: "github", url: "https://github.com/opsecured" }
+    - { title: "riparino on GitHub", icon: "github", url: "https://github.com/riparino" }
 
 plugins:
   - jekyll-remote-theme
