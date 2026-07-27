@@ -1,6 +1,7 @@
 ---
 title: "The Tree, Not the List"
 date: 2026-07-28 05:00:00 -0700
+tags: [security operations, incident response, cybersecurity]
 ---
 
 A cloud storage bucket goes public in a dev environment; someone notices, hesitates, checks with someone else, and eventually locks it down. A day later the same class of bucket goes public in production, and you'd expect the response to be faster, since the stakes are higher and the math isn't close, but instead it's the same hesitation, sometimes worse, because now being wrong happens somewhere people can see it.
