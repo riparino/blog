@@ -4,9 +4,9 @@ date: 2026-07-28 05:00:00 -0700
 tags: [mcp, agents, ai, llm, authorization, detection-engineering]
 ---
 
-The final 2026-07-28 MCP specification lands tomorrow, and it is a genuinely large piece of work — the release candidate published in May removed sessions, dropped the initialization handshake, introduced an extensions framework, and hardened authorization across six separate proposals. Issuer validation, credential binding, audience-restricted tokens, step-up consent. Read the changelog and you will come away thinking the protocol got a serious security pass, because it did.
+I spent an evening this week with the MCP release-candidate changelog in one tab and the final 2026-07-28 spec's authorization proposals in the other, and my first reaction was relief. Sessions are gone. The initialization handshake is gone. There's an extensions framework now, and real hardening on authorization across six separate proposals: issuer validation, credential binding, audience-restricted tokens, step-up consent. Read that list and the natural conclusion is that the protocol just got a serious security pass. It did.
 
-Now read it again and ask a different question: which of those six changes fires on tool call number five hundred?
+Then I reread it and asked the question that actually matters once an agent is running in production: which of those six changes fires on tool call number five hundred?
 
 None of them. Every one of them is about the handshake. They govern how an agent proves who it is and which server a token is good for, and they do that better than the protocol did six months ago. What none of them do — what nothing in the stack does, at any layer I can find — is stand between a model's decision to call a tool and that tool actually running, look at the specific arguments in front of it, and be capable of saying no.
 
@@ -28,7 +28,7 @@ The second place is an allowlist, and the allowlist is worse than nothing, which
 
 ## The allowlist is an indicator
 
-CVE-2026-22708 against Cursor is the cleanest illustration I have seen. The attack poisons the agent's execution environment so that allowlisted commands deliver attacker-controlled payloads, and the reporting on it makes the uncomfortable point plainly: the allowlist made the attack easier, because it had already auto-approved the exact commands the attacker needed. `git branch` is on every sane allowlist. `git branch` is also what carried the payload.
+I recommended allowlists for years, back when the alternative on the table was letting an agent run anything at all. Against that baseline they looked like real progress. CVE-2026-22708 against Cursor is what changed my mind, and it's the cleanest illustration I have seen. The attack poisons the agent's execution environment so that allowlisted commands deliver attacker-controlled payloads, and the reporting on it makes the uncomfortable point plainly: the allowlist made the attack easier, because it had already auto-approved the exact commands the attacker needed. `git branch` is on every sane allowlist. `git branch` is also what carried the payload.
 
 An allowlist names the verb. Almost all of the danger lives in the arguments, the environment, and the provenance of whatever caused the call. `curl` to your own artifact registry and `curl` to an attacker's collector are the same entry in the list. `psql` running a `SELECT` and `psql` running a `DROP` are the same entry. Anyone who has spent time at [detection altitude](https://blog.opsecured.net/2026/07/16/detection-altitude-is-a-collection-strategy.html) already knows the shape of this problem, because it is the same one: the tool name is an indicator, brittle and easy to satisfy, while the thing you actually care about — what this call does, to what, on whose behalf — is a behavior, and nobody is evaluating it.
 
@@ -87,6 +87,8 @@ Provenance on the numbers, since I insist on it elsewhere: the CVEs above come f
 ## The synthesis
 
 We shipped identity for agents and called it security. Authentication tells you which agent is asking, resource scoping tells you which doors it may stand in front of, and neither of them is looking at the hand on the doorknob. Until something deterministic sits in the invocation path, evaluates the arguments and the provenance and the reversibility of each call, and is permitted to answer no, every agent deployment is running on the assumption that the model will not be talked into anything — which is not a control, it is a hope with an OAuth token.
+
+I closed the changelog tab still convinced the spec authors did good work. I just don't think it's the work that needed doing.
 
 The NSA wrote guidance on MCP security in May. The spec ships tomorrow. The layer that would make either of them load-bearing is still nobody's job.
 
