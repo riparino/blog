@@ -4,7 +4,7 @@ date: 2026-07-28 05:00:00 -0700
 tags: [mcp, agents, ai, llm, authorization, detection-engineering]
 ---
 
-I spent an evening this week with the MCP release-candidate changelog in one tab and the final 2026-07-28 spec's authorization proposals in the other, and my first reaction was relief. Sessions are gone. The initialization handshake is gone. There's an extensions framework now, and real hardening on authorization across six separate proposals: issuer validation, credential binding, audience-restricted tokens, step-up consent. Read that list and the natural conclusion is that the protocol just got a serious security pass. It did.
+I spent Sunday evening with the MCP release-candidate changelog in one tab and the final 2026-07-28 spec's authorization proposals in the other, and my first reaction was relief. The protocol removed sessions, dropped the initialization handshake, added an extensions framework, and shipped six separate proposals hardening how an agent proves who it is and what it's allowed to touch: issuer validation, credential binding, audience-restricted tokens, step-up consent. Read that list and the natural conclusion is that the protocol just got a serious security pass. It did.
 
 Then I reread it and asked the question that actually matters once an agent is running in production: which of those six changes fires on tool call number five hundred?
 
