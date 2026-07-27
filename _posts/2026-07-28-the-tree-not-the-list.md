@@ -1,6 +1,6 @@
 ---
 title: "The Tree, Not the List"
-date: 2026-07-28 05:00:00 -0700
+date: 2026-07-27 05:00:00 -0700
 tags: [security operations, incident response, cybersecurity]
 ---
 
