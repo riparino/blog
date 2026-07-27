@@ -68,6 +68,4 @@ The tooling problem and the confidence problem turn out to be the same problem w
 
 ---
 
-*Disclosure: written with AI assistance. The diagnosis, the tree, and the backlog of misses I never wrote down are mine.*
-
-*P.S. Started this at 2pm meaning to knock out a quick post before dinner. It's 9pm. The tree took longer to draw than the argument did.*
+*Disclosure: written with AI assistance for formatting and research. This one took quite a few hours.*
