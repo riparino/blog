@@ -4,27 +4,39 @@ date: 2026-08-25 05:00:00 -0700
 tags: [ai, agents, llm, autonomy, detection-engineering, security operations]
 ---
 
-An "AI stack" diagram came across my LinkedIn feed last week. You've seen it, or one of its cousins, because some version of it circulates every few weeks: five tidy boxes, infrastructure at the bottom, then models, then orchestration, then agents, then applications on top, each layer resting on the one below like a wedding cake. Here it is, redrawn, so we're looking at the same picture:
+An AI security architecture diagram came across my LinkedIn feed — Raghu Yammanuru's, a former colleague who's off building an AI security company now, and I want to say up front that his is one of the good ones. A user at the top, an identity provider under it, an API gateway, an AI gateway, guardrails and authorization side by side, then the agent, then its tools and vector stores, then the enterprise systems at the bottom. A security-controls rail runs up one side, an observability rail up the other, and across the bottom, as a principle: human-in-the-loop for high-risk actions. Zero trust, least privilege, verify explicitly. Redrawn and compressed, so we're looking at the same picture:
 
 ```
-+--------------------------+
-|       applications       |
-+--------------------------+
-|          agents          |
-+--------------------------+
-|      orchestration       |
-+--------------------------+
-|          models          |
-+--------------------------+
-|      infrastructure      |
-+--------------------------+
++---------------------------+
+|           user            |
++---------------------------+
+|     identity provider     |
++---------------------------+
+|     API gateway / WAF     |
++---------------------------+
+|        AI gateway         |
++---------------------------+
+|  guardrails · authz/RBAC  |
++---------------------------+
+|         AI agent          |
++---------------------------+
+|  RAG · tools · vector DB  |
++---------------------------+
+|    enterprise systems     |
++---------------------------+
+
+flanked by two rails: security controls end to end on one
+side, observability and operations on the other — logging,
+audit trails, SIEM/SOAR. principles across the bottom:
+least privilege · verify explicitly · assume breach ·
+human-in-the-loop for high-risk actions
 ```
 
-It's not wrong. That's what made it hard to articulate why it bothered me for days, until I landed on it: the diagram is a parts list. It shows you the AI. It doesn't show you the work.
+I'd deploy most of it tomorrow. That's what made it hard to articulate why it bothered me for days, until I landed on it: it's a diagram of a request. It follows one call from a user, through the controls, to an answer, and it governs that call well. It shows you the AI, secured at runtime. It doesn't show you the work.
 
-Here's the test I'd put to any stack diagram: the operational questions should land somewhere on it. Why can't the agent deploy this fix to production? Who authorized that tool call at 2am? What re-validates every automated decision when the model version underneath changes? Point to the box where those answers live. On the five-box diagram you can't, because the answers live in layers it doesn't draw, and those turn out to be most of the layers.
+Here's the test I'd put to any diagram of this kind: the operational questions should land somewhere on it. Why can't the agent deploy this fix to production? Who authorized that tool call at 2am — and had the agent earned the right to make it without asking? What re-validates every automated decision when the model version underneath changes? Point to the box where those answers live. On the request diagram you can't, and it isn't carelessness: those answers live in layers a runtime flow has no place for, because a request is over in seconds and the answers play out over months.
 
-So I drew the whole thing, for the environment I actually work in: a cloud-native healthcare data platform. And I drew it for the operations side, deliberately — not the AI in the product, but the AI that does the work. What I want is a model of AI workers: engineers, product and security both, handing real work to agents that hold real access and do it securely, with every layer those workers stand on drawn in — the infrastructure, where the orchestrator takes hold, the prompts, the guardrails, the controls. The model, the box the LinkedIn genre treats as the point, is one layer of thirteen, near the bottom, and nearly everything that determines whether any of this works sits above it. The irony of answering a five-box diagram with a thirteen-layer one is not lost on me; the extra layers are the argument.
+So I drew the whole thing, for the environment I actually work in: a cloud-native healthcare data platform. And I drew it for the operations side, deliberately — not the AI in the product, but the AI that does the work. What I want is a model of AI workers: engineers, product and security both, handing real work to agents that hold real access and do it securely, with every layer those workers stand on drawn in — the infrastructure, where the orchestrator takes hold, the prompts, the guardrails, the controls. Not just prompts pointed at a tenant: actual infrastructure. The model itself is one layer of thirteen, near the bottom, and nearly everything that determines whether any of this works sits above it. The irony of answering an architecture diagram with a bigger architecture diagram is not lost on me; the extra layers are the argument.
 
 ## The full stack
 
@@ -88,15 +100,15 @@ telemetry   every layer emits into the same pipeline that watches the
             records, instruction-file diffs.
 ```
 
-Hold the two diagrams next to each other. The five boxes cover the bottom three rows and the orchestration row; the fifth box, applications, is the product — the one thing a diagram of the work deliberately leaves out. Everything else here is the part you can't buy, which is a strange thing to leave out of a diagram, since it's also the part that decides whether the rows it does draw ever produce anything.
+Hold the two diagrams next to each other. The request flow covers a genuine chunk of this stack: both rails, the gateway, the data row, orchestration, and the static half of the authorization row — the RBAC, the token validation, the least privilege. What it has nowhere on it is the other half of authorization, the part where what an agent may do changes as it earns it, or the environments ladder, or evaluation, or the work row, or the humans. And it can't have them, structurally: those are the layers where trust gets built over weeks, and a request diagram lives inside a single call. Everything the flow doesn't reach is the part you can't buy, which is also the part that decides whether the agent in the middle of it ever gets to do more than answer questions.
 
 ## The rows everyone already draws
 
-I'll be brief about the bottom of the stack, because this is the territory the genre already covers.
+I'll be brief about the bottom of the stack, because this is the territory the request diagram already covers well.
 
-Substrate is real engineering but it's the most commodity layer here, and the interesting property is the boundary work: private endpoints, egress control, tenancy. Data is where healthcare stops being a generic column in someone's market map: the de-identification boundary is a property of the data layer, and half the security architecture above it exists to keep that property true. Models, plural, is the row the genre draws as the star, and for the workers it's an inventory: frontier models rented by API, embedding models, and a long tail of classical ML that was "AI" before the rebrand. The register that matters isn't which models; it's that they carry versions and deprecation dates, which means everything above them inherits change it didn't ask for.
+Substrate is real engineering but it's the most commodity layer here, and the interesting property is the boundary work: private endpoints, egress control, tenancy. Data is where healthcare stops being a generic column in someone's market map: the de-identification boundary is a property of the data layer, and half the security architecture above it exists to keep that property true. Models, plural, is an inventory for the workers: frontier models rented by API, embedding models, and a long tail of classical ML that was "AI" before the rebrand. The register that matters isn't which models; it's that they carry versions and deprecation dates, which means everything above them inherits change it didn't ask for.
 
-The gateway is the first layer the five-box diagram usually skips, and it's the one that makes the model layer governable at all: one place where every model call gets routed, throttled, content-filtered, cached, and, the part I care about, attributed. A model call is an invoice with a caller on it. Readers of [the log-source post](/2026/07/11/every-log-source-is-an-invoice.html) can guess how I feel about AI spend that can't name which workload incurred it.
+The gateway is a layer the request diagram gets exactly right — an AI gateway with model access control sits dead center of it — and it's the one that makes the model layer governable at all: one place where every model call gets routed, throttled, content-filtered, cached, and, the part I care about, attributed. A model call is an invoice with a caller on it. Readers of [the log-source post](/2026/07/11/every-log-source-is-an-invoice.html) can guess how I feel about AI spend that can't name which workload incurred it.
 
 ## Where the demo ends
 
@@ -114,7 +126,7 @@ Authorization is where the eval results become permission. Policy written in Eng
 
 ## Two tenants, one stack
 
-The top of the diagram is the claim I actually want to make. In conversations I've been calling it the next gen of work, which I realize is exactly the kind of phrase the five-box diagram ships wrapped in, so here is the mechanical version: the work moves up the stack, and the humans move with it.
+The top of the diagram is the claim I actually want to make. In conversations I've been calling it the next gen of work, which I realize is exactly the kind of phrase these diagrams ship wrapped in, so here is the mechanical version: the work moves up the stack, and the humans move with it.
 
 The engineering harness is the box I want engineers to live in. The work becomes intent plus review instead of typing: the agent writes the change, opens the pull request, runs it through CI, and holds exactly the environment rung its task class has earned. The part that matters more to me than shipping is maintaining, because shipping was already fun; maintenance is where careers go quiet.
 
@@ -140,7 +152,7 @@ And someone has to own the harness. Not engineering, not the SOC, the shared row
 
 ## The synthesis
 
-The five-box diagram is a diagram of the part you can buy, and the part you can buy is the part someone else operates: the models improve on a vendor's roadmap, get re-priced on a vendor's schedule, and get deprecated on a vendor's timeline, and none of that asks your permission. Everything above the model row is the part you operate, and it's where the actual outcomes live, because those are the layers that either pay down toil and incidents or quietly generate them. That's the harness. It's the part that decides whether the work at the top of the diagram becomes real or stays a demo, and it's built out of the least glamorous rows on the page: credential ladders, replay corpora, policies somebody maintains, telemetry somebody prices. Draw the whole stack, because every layer you leave off the diagram is a layer you'll meet later in a post-mortem, and it will not be wearing a tidy box.
+The request diagram is a diagram of the part you can buy, and the part you can buy is the part someone else operates: the gateways and guardrails are products, and the models behind them improve on a vendor's roadmap, get re-priced on a vendor's schedule, and get deprecated on a vendor's timeline, and none of that asks your permission. Everything above the model row is the part you operate, and it's where the actual outcomes live, because those are the layers that either pay down toil and incidents or quietly generate them. That's the harness. It's the part that decides whether the work at the top of the diagram becomes real or stays a demo, and it's built out of the least glamorous rows on the page: credential ladders, replay corpora, policies somebody maintains, telemetry somebody prices. Draw the whole stack, because every layer you leave off the diagram is a layer you'll meet later in a post-mortem, and it will not be wearing a tidy box.
 
 ---
 
