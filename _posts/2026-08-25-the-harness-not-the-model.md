@@ -4,15 +4,31 @@ date: 2026-08-25 05:00:00 -0700
 tags: [ai, agents, llm, autonomy, detection-engineering, security operations]
 ---
 
-An "AI stack" diagram came across my LinkedIn feed last week. You've seen it, or one of its cousins, because some version of it circulates every few weeks: five tidy boxes, infrastructure at the bottom, then models, then orchestration, then agents, then applications on top, each layer resting on the one below like a wedding cake. It's not wrong. That's what made it hard to articulate why it bothered me for days, until I landed on it: the diagram is a parts list. It shows you the AI. It doesn't show you the work.
+An "AI stack" diagram came across my LinkedIn feed last week. You've seen it, or one of its cousins, because some version of it circulates every few weeks: five tidy boxes, infrastructure at the bottom, then models, then orchestration, then agents, then applications on top, each layer resting on the one below like a wedding cake. Here it is, redrawn, so we're looking at the same picture:
+
+```
++--------------------------+
+|       applications       |
++--------------------------+
+|          agents          |
++--------------------------+
+|      orchestration       |
++--------------------------+
+|          models          |
++--------------------------+
+|      infrastructure      |
++--------------------------+
+```
+
+It's not wrong. That's what made it hard to articulate why it bothered me for days, until I landed on it: the diagram is a parts list. It shows you the AI. It doesn't show you the work.
 
 Here's the test I'd put to any stack diagram: the operational questions should land somewhere on it. Why can't the agent deploy this fix to production? Who authorized that tool call at 2am? What re-validates every automated decision when the model version underneath changes? Point to the box where those answers live. On the five-box diagram you can't, because the answers live in layers it doesn't draw, and those turn out to be most of the layers.
 
-So I drew the whole thing, for the environment I actually work in: a cloud-native healthcare data platform where AI is simultaneously in the product, doing the engineering, and running a growing share of the security operation. Every layer, including the ones that only show up after something goes wrong. The model, the box the LinkedIn genre treats as the point, is one layer of thirteen, near the bottom, and nearly everything that determines whether any of this works sits above it. The irony of answering a five-box diagram with a thirteen-layer one is not lost on me; the extra layers are the argument.
+So I drew the whole thing, for the environment I actually work in: a cloud-native healthcare data platform. And I drew it for the operations side, deliberately — not the AI in the product, but the AI that does the work. What I want is a model of AI workers: engineers, product and security both, handing real work to agents that hold real access and do it securely, with every layer those workers stand on drawn in — the infrastructure, where the orchestrator takes hold, the prompts, the guardrails, the controls. The model, the box the LinkedIn genre treats as the point, is one layer of thirteen, near the bottom, and nearly everything that determines whether any of this works sits above it. The irony of answering a five-box diagram with a thirteen-layer one is not lost on me; the extra layers are the argument.
 
 ## The full stack
 
-Read it bottom-up. Everything below a layer is what that layer stands on, and the three boxes just under the humans row are the reason the rest exists.
+Read it bottom-up. Everything below a layer is what that layer stands on, and the two boxes just under the humans row are the reason the rest exists.
 
 ```
 +----------------------------------------------------------------------------+
@@ -21,14 +37,12 @@ Read it bottom-up. Everything below a layer is what that layer stands on, and th
 |                 delegates                                                  |
 +----------------------------------------------------------------------------+
 | the work                                                                   |
-|   +----------------------+ +----------------------+ +--------------------+ |
-|   | product AI           | | engineering harness  | | security decision  | |
-|   | the features the     | | agents that ship and | | layer              | |
-|   | customer sees; the   | | maintain the         | | agents that triage,| |
-|   | domain LM inside     | | platform: code,      | | adjudicate, and    | |
-|   | the data pipeline    | | infra, migrations,   | | maintain the       | |
-|   |                      | | the 2am page         | | detection estate   | |
-|   +----------------------+ +----------------------+ +--------------------+ |
+|   +---------------------------------+  +---------------------------------+ |
+|   | engineering harness             |  | security decision layer         | |
+|   | agents that ship and maintain   |  | agents that triage, adjudicate, | |
+|   | the platform: code, infra,      |  | and maintain the detection      | |
+|   | migrations, the 2am page        |  | estate                          | |
+|   +---------------------------------+  +---------------------------------+ |
 +----------------------------------------------------------------------------+
 | authorization   policy written in English, versioned in git · autonomy     |
 |                 graduated per task class: shadow -> assisted ->            |
@@ -53,13 +67,12 @@ Read it bottom-up. Everything below a layer is what that layer stands on, and th
 | gateway         routing · quotas · content filters · caching · cost        |
 |                 attribution per caller                                     |
 +----------------------------------------------------------------------------+
-| models          the domain LM and the pipeline that trains, evaluates,     |
-|                 and promotes it · frontier models by API · embeddings ·    |
-|                 classical ML · a registry with versions and deprecations   |
+| models          frontier models by API · embeddings · classical ML · a     |
+|                 registry with versions and deprecations                    |
 +----------------------------------------------------------------------------+
 | data            the clinical corpus behind the de-identification           |
-|                 boundary · classification · RAG stores · lineage · the     |
-|                 training pipeline's inputs                                 |
+|                 boundary · classification · the RAG stores workers         |
+|                 retrieve from · lineage                                    |
 +----------------------------------------------------------------------------+
 | substrate       cloud, GPU serving, private endpoints, egress control,     |
 |                 tenant isolation                                           |
@@ -75,13 +88,13 @@ telemetry   every layer emits into the same pipeline that watches the
             records, instruction-file diffs.
 ```
 
-The five-box LinkedIn diagram covers the bottom three rows, the orchestration row, and a corner of the product box. Everything else is the part you can't buy, which is a strange thing to leave out of a diagram, since it's also the part that decides whether the rows it does draw ever produce anything.
+Hold the two diagrams next to each other. The five boxes cover the bottom three rows and the orchestration row; the fifth box, applications, is the product — the one thing a diagram of the work deliberately leaves out. Everything else here is the part you can't buy, which is a strange thing to leave out of a diagram, since it's also the part that decides whether the rows it does draw ever produce anything.
 
 ## The rows everyone already draws
 
 I'll be brief about the bottom of the stack, because this is the territory the genre already covers.
 
-Substrate is real engineering but it's the most commodity layer here, and the interesting property is the boundary work: private endpoints, egress control, tenancy. Data is where healthcare stops being a generic column in someone's market map: the de-identification boundary is a property of the data layer, and half the security architecture above it exists to keep that property true. Models, plural, is the row the genre draws as the star, and in practice it's an inventory: a domain model whose whole job is making messy clinical records computable, plus the pipeline that trains and promotes it, frontier models rented by API, embedding models, and a long tail of classical ML that was "AI" before the rebrand. The register that matters isn't which models; it's that they carry versions and deprecation dates, which means everything above them inherits change it didn't ask for, and that trained weights inherit the sensitivity of whatever trained them.
+Substrate is real engineering but it's the most commodity layer here, and the interesting property is the boundary work: private endpoints, egress control, tenancy. Data is where healthcare stops being a generic column in someone's market map: the de-identification boundary is a property of the data layer, and half the security architecture above it exists to keep that property true. Models, plural, is the row the genre draws as the star, and for the workers it's an inventory: frontier models rented by API, embedding models, and a long tail of classical ML that was "AI" before the rebrand. The register that matters isn't which models; it's that they carry versions and deprecation dates, which means everything above them inherits change it didn't ask for.
 
 The gateway is the first layer the five-box diagram usually skips, and it's the one that makes the model layer governable at all: one place where every model call gets routed, throttled, content-filtered, cached, and, the part I care about, attributed. A model call is an invoice with a caller on it. Readers of [the log-source post](/2026/07/11/every-log-source-is-an-invoice.html) can guess how I feel about AI spend that can't name which workload incurred it.
 
@@ -99,11 +112,9 @@ Evaluation is the proof machinery: replay against historical cases, regression g
 
 Authorization is where the eval results become permission. Policy written in English, versioned in git, precise enough to replay: what the agent may do autonomously, what it does with a human assisting, what it must never do without a page. Autonomy graduates per task class, shadow to assisted to autonomous, and high-impact paths never enter the pipeline at all. The decision rule that runs the whole layer is the one from [the tree post](/2026/07/27/the-tree-not-the-list.html): can this be undone in five minutes? Reversible actions are where autonomy starts, and irreversibility is the signal to escalate, for an agent exactly as for a human, except the agent applies the rule the same way at 3am as at 3pm. And none of this is the model grading its own homework. The ladder bounds what an agent can reach; tool-call gates, checked outside the model against the agent's graduation level, bound what it may do within reach, with the irreversible classes intercepted for approval. The authority comes from the policy and the gates, not from the model's reading of either.
 
-## Three tenants, one stack
+## Two tenants, one stack
 
 The top of the diagram is the claim I actually want to make. In conversations I've been calling it the next gen of work, which I realize is exactly the kind of phrase the five-box diagram ships wrapped in, so here is the mechanical version: the work moves up the stack, and the humans move with it.
-
-The product box is the only one the LinkedIn genre draws: the AI the customer sees, plus the domain model working inside the data pipeline. It rides every layer below: its calls go through the same gateway, its retrieval hits the same governed stores, its releases pass the same eval gates, its traces land in the same telemetry.
 
 The engineering harness is the box I want engineers to live in. The work becomes intent plus review instead of typing: the agent writes the change, opens the pull request, runs it through CI, and holds exactly the environment rung its task class has earned. The part that matters more to me than shipping is maintaining, because shipping was already fun; maintenance is where careers go quiet.
 
@@ -111,7 +122,7 @@ Walk the 2am page through it, the version I want and don't yet have. A canary st
 
 And the security decision layer is the same box wearing our clothes. When we redesigned triage to remove Tier 1, the write-up I produced wasn't, on reflection, a SOC document. It was this diagram with different nouns: candidate signals instead of backlog tickets, dispositions instead of merged PRs, [policy-gated closure](/2026/07/14/page-on-decisions-not-alerts.html) instead of deploy rights, decision records instead of commit history, shadow mode instead of a feature branch. Detection content is code, so the engineering harness applies to it directly, and the detections the agents maintain are the ones watching the telemetry rail of this very stack, which closes a loop: the stack defends itself with the same architecture it works with.
 
-Which is why I keep insisting these aren't three stacks. An org that builds an "AI platform" for product, a separate agent setup for engineering, and an "AI SOC" as a third thing is running the same shared layers three times over to differ in the work row alone, and every seam between the copies is a place where an attacker, an outage, or an invoice hides. Call it an organizational bifurcation problem if you want the whitepaper version of the sentence; I'd put it more plainly: you don't have three AI strategies, you have one harness with three tenants, and the sooner the org chart admits it the fewer layers get built twice.
+Which is why I keep insisting these aren't two stacks. An org that builds an agent setup for engineering and an "AI SOC" as a second, separate thing is running the same shared layers twice to differ in the work row alone, and the seam between the copies is a place where an attacker, an outage, or an invoice hides. Call it an organizational bifurcation problem if you want the whitepaper version of the sentence; I'd put it more plainly: you don't have two AI strategies, you have one harness with two tenants, and the sooner the org chart admits it the fewer layers get built twice.
 
 The humans box stays on top, and not as decoration. Somebody authors the policy, reviews the exceptions, and runs [the review of the misses](/2026/07/27/the-tree-not-the-list.html), because the graduation gates are only as honest as the people auditing them, myself included. Accountability never delegates: the agent may hold the pager, but a person owns what it did with it.
 
@@ -125,7 +136,7 @@ The identity rail is a population explosion. Every agent per task class per envi
 
 Evaluation is a standing commitment that rots quietly. The replay corpora, the regression gates, the agreement-rate baselines: all of it decays the way reference lists decay, and an autonomy gradient calibrated against last quarter's model version is a lie with a dashboard. Healthcare adds its own drag: some task classes will never graduate, because the reversibility rule fails permanently anywhere patient data could move, and the decision records here do double duty as engineering hygiene and as the thing you hand a regulator.
 
-And someone has to own the harness. Not the product, not the SOC, the shared rows underneath all three tenants, and today that owner doesn't cleanly exist on most org charts, including in places that have already built half of this. Unowned shared infrastructure doesn't stay unowned; it gets owned by whoever's outage it causes.
+And someone has to own the harness. Not engineering, not the SOC, the shared rows underneath both tenants, and today that owner doesn't cleanly exist on most org charts, including in places that have already built half of this. Unowned shared infrastructure doesn't stay unowned; it gets owned by whoever's outage it causes.
 
 ## The synthesis
 
