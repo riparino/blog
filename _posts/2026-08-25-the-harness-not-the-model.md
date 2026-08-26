@@ -4,7 +4,7 @@ date: 2026-08-25 05:00:00 -0700
 tags: [ai, agents, llm, autonomy, detection-engineering, security operations]
 ---
 
-An AI security architecture diagram came across my LinkedIn feed — Raghu Yammanuru's, a former colleague who's off building an AI security company now, and I want to say up front that his is one of the good ones. A user at the top, an identity provider under it, an API gateway, an AI gateway, guardrails and authorization side by side, then the agent, then its tools and vector stores, then the enterprise systems at the bottom. A security-controls rail runs up one side, an observability rail up the other, and across the bottom, as a principle: human-in-the-loop for high-risk actions. Zero trust, least privilege, verify explicitly. Redrawn and compressed, so we're looking at the same picture:
+An AI security architecture diagram came across my LinkedIn feed, from a multi-cloud security architect a couple of hops outside my network, and I want to say up front that it's one of the good ones. A user at the top, an identity provider under it, an API gateway, an AI gateway, guardrails and authorization side by side, then the agent, then its tools and vector stores, then the enterprise systems at the bottom. A security-controls rail runs up one side, an observability rail up the other, and across the bottom, as a principle: human-in-the-loop for high-risk actions. Zero trust, least privilege, verify explicitly. Redrawn and compressed, so we're looking at the same picture:
 
 ```
 +---------------------------+
