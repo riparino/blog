@@ -6,31 +6,7 @@ tags: [ai, agents, llm, autonomy, detection-engineering, security operations]
 
 An AI security architecture diagram came across my LinkedIn feed, from a multi-cloud security architect a couple of hops outside my network, and I want to say up front that it's one of the good ones. A user at the top, an identity provider under it, an API gateway, an AI gateway, guardrails and authorization side by side, then the agent, then its tools and vector stores, then the enterprise systems at the bottom. A security-controls rail runs up one side, an observability rail up the other, and across the bottom, as a principle: human-in-the-loop for high-risk actions. Zero trust, least privilege, verify explicitly. Redrawn and compressed, so we're looking at the same picture:
 
-```
-+---------------------------+
-|           user            |
-+---------------------------+
-|     identity provider     |
-+---------------------------+
-|     API gateway / WAF     |
-+---------------------------+
-|        AI gateway         |
-+---------------------------+
-|  guardrails · authz/RBAC  |
-+---------------------------+
-|         AI agent          |
-+---------------------------+
-|  RAG · tools · vector DB  |
-+---------------------------+
-|    enterprise systems     |
-+---------------------------+
-
-flanked by two rails: security controls end to end on one
-side, observability and operations on the other — logging,
-audit trails, SIEM/SOAR. principles across the bottom:
-least privilege · verify explicitly · assume breach ·
-human-in-the-loop for high-risk actions
-```
+![The request-flow architecture, redrawn: user, identity provider, API gateway, AI gateway, guardrails and authorization, AI agent, RAG and tools, IAM and Entra ID, then enterprise systems — flanked by a security-controls rail and an observability rail, with zero-trust principles across the bottom.](/assets/img/harness-request-flow.png)
 
 I'd deploy most of it tomorrow. That's what made it hard to articulate why it bothered me for days, until I landed on it: it's a diagram of a request. It follows one call from a user, through the controls, to an answer, and it governs that call well. It shows you the AI, secured at runtime. It doesn't show you the work.
 
@@ -42,63 +18,9 @@ So I drew the whole thing, for the environment I actually work in: a cloud-nativ
 
 Read it bottom-up. Everything below a layer is what that layer stands on, and the two boxes just under the humans row are the reason the rest exists.
 
-```
-+----------------------------------------------------------------------------+
-| humans          intent · policy authorship · review of exceptions ·        |
-|                 review of the misses · accountability, which never         |
-|                 delegates                                                  |
-+----------------------------------------------------------------------------+
-| the work                                                                   |
-|   +---------------------------------+  +---------------------------------+ |
-|   | engineering harness             |  | security decision layer         | |
-|   | agents that ship and maintain   |  | agents that triage, adjudicate, | |
-|   | the platform: code, infra,      |  | and maintain the detection      | |
-|   | migrations, the 2am page        |  | estate                          | |
-|   +---------------------------------+  +---------------------------------+ |
-+----------------------------------------------------------------------------+
-| authorization   policy written in English, versioned in git · autonomy     |
-|                 graduated per task class: shadow -> assisted ->            |
-|                 autonomous · tool-call gates enforced outside the model ·  |
-|                 the reversibility rule · high-impact paths never enter     |
-+----------------------------------------------------------------------------+
-| evaluation      replay against historical cases · regression gates on      |
-|                 every prompt, policy, tool, and model change ·             |
-|                 agreement-rate calibration · adversarial testing           |
-+----------------------------------------------------------------------------+
-| environments    dev -> test -> staging -> prod as a credential ladder;     |
-|                 the rung an agent holds is the trust it has earned for     |
-|                 that task class, and it is revocable                       |
-+----------------------------------------------------------------------------+
-| orchestration   agent loops · tool calling · sandboxed execution ·         |
-|                 multi-agent handoff · workflow state                       |
-+----------------------------------------------------------------------------+
-| context         system prompts · instruction files · skills · retrieval ·  |
-|                 memory · the MCP tool surface — executable-as-intent, and  |
-|                 the least-reviewed privileged config in the org            |
-+----------------------------------------------------------------------------+
-| gateway         routing · quotas · content filters · caching · cost        |
-|                 attribution per caller                                     |
-+----------------------------------------------------------------------------+
-| models          frontier models by API · embeddings · classical ML · a     |
-|                 registry with versions and deprecations                    |
-+----------------------------------------------------------------------------+
-| data            the clinical corpus behind the de-identification           |
-|                 boundary · classification · the RAG stores workers         |
-|                 retrieve from · lineage                                    |
-+----------------------------------------------------------------------------+
-| substrate       cloud, GPU serving, private endpoints, egress control,     |
-|                 tenant isolation                                           |
-+----------------------------------------------------------------------------+
+![The full thirteen-layer stack: substrate, data, models, gateway, context, orchestration, environments, evaluation, and authorization rows; the work row holding the engineering harness and the security decision layer; humans on top; identity and telemetry rails running the full height.](/assets/img/harness-full-stack.png)
 
-two rails, the stack's last two layers, run its full height:
-
-identity    every caller at every layer is a principal, human or agent:
-            scoped, short-lived, attributable. no shared god-token
-            anywhere on the diagram.
-telemetry   every layer emits into the same pipeline that watches the
-            rest of the estate: invocation traces, tool calls, decision
-            records, instruction-file diffs.
-```
+*Two rails, the stack's last two layers, run its full height and touch every row.*
 
 Hold the two diagrams next to each other. The request flow covers a genuine chunk of this stack: both rails, the gateway, the data row, orchestration, and the static half of the authorization row — the RBAC, the token validation, the least privilege. What it has nowhere on it is the other half of authorization, the part where what an agent may do changes as it earns it, or the environments ladder, or evaluation, or the work row, or the humans. And it can't have them, structurally: those are the layers where trust gets built over weeks, and a request diagram lives inside a single call. Everything the flow doesn't reach is the part you can't buy, which is also the part that decides whether the agent in the middle of it ever gets to do more than answer questions.
 
