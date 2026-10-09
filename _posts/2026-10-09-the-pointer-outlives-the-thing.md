@@ -98,4 +98,4 @@ The discipline is one sentence, and it's worth ending on: the name dies first, o
 
 ---
 
-*Disclosure: written with AI assistance. Meridian is invented and the scenario is illustrative; the mechanism, the scratch-tenant reproduction, the two bugs I had to find the hard way, and the opinions are mine.*
+*Disclosure: AI was used for proofing.*
