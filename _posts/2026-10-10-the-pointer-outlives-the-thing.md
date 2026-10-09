@@ -4,7 +4,9 @@ date: 2026-10-10 05:00:00 -0700
 tags: [dns, subdomain-takeover, detection-engineering, cloud security, security operations]
 ---
 
-Picture a company. Call it Meridian, it doesn't matter, because the only thing that makes Meridian special is that it's careful, and careful is exactly the kind of place this happens to. One day a subdomain under one of Meridian's corporate domains starts serving a malware distribution page. Not a lookalike domain, not a typo-squat. The real domain, a real subdomain under it, every label beneath that subdomain, all resolving to someone else's content, all behind a valid TLS certificate issued for Meridian's name. Nobody logged into anything. No credential was phished, no token stolen, no box popped. The attacker never touched a single system Meridian owns.
+Picture a company. Call it Meridian, it doesn't matter, because the only thing that makes Meridian special is that it's careful, and careful is exactly the kind of place this happens to. 
+
+One day a subdomain under one of Meridian's corporate domains suddenlly starts serving commodity malware via a distribution page. Hundreds of further subdomains under the original appear. Not a lookalike domain, not a typo-squat. The real domain, a real subdomain under it, every label beneath that subdomain, all resolving to someone else's content, all behind a valid TLS certificate issued for Meridian's name. Nobody logged into anything. No credential was phished, no token stolen, no box popped. The attacker never touched a single system Meridian owns.
 
 What they took over was a pointer Meridian forgot to delete.
 
