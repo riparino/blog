@@ -4,7 +4,7 @@ date: 2026-10-09 05:00:00 -0700
 tags: [dns, subdomain-takeover, detection-engineering, cloud security, security operations]
 ---
 
-Picture a company. Call it Meridian, it doesn't matter, because the only thing that makes Meridian special is that it's careful, and careful is exactly the kind of place this happens to. One day a subdomain under one of Meridian's corporate domains starts serving gambling sites. Not a lookalike domain, not a typo-squat. The real domain, a real subdomain under it, every label beneath that subdomain, all resolving to someone else's content, all behind a valid TLS certificate issued for Meridian's name. Nobody logged into anything. No credential was phished, no token stolen, no box popped. The attacker never touched a single system Meridian owns.
+Picture a company. Call it Meridian, it doesn't matter, because the only thing that makes Meridian special is that it's careful, and careful is exactly the kind of place this happens to. One day a subdomain under one of Meridian's corporate domains starts serving a malware distribution page. Not a lookalike domain, not a typo-squat. The real domain, a real subdomain under it, every label beneath that subdomain, all resolving to someone else's content, all behind a valid TLS certificate issued for Meridian's name. Nobody logged into anything. No credential was phished, no token stolen, no box popped. The attacker never touched a single system Meridian owns.
 
 What they took over was a pointer Meridian forgot to delete.
 
@@ -80,7 +80,7 @@ Both mistakes have the same flavor as [the one I keep writing about](/2026/07/13
 
 1. **Fix the teardown order.** Remove the parent delegation first, confirm the name no longer resolves, *then* delete the child zone or resource. Bake it into the runbook and into the infrastructure-as-code destroy sequence as an explicit dependency, so the pipeline physically cannot delete the backing resource before the record that points at it. This is the whole fix; everything else is a net under it.
 
-2. **Scan continuously.** Run the detector daily against every subscription and alert on anything HIGH. It's read-only and needs only read access. This is the control that catches the dangle the day the child zone is deleted, instead of whenever someone notices the gambling site.
+2. **Scan continuously.** Run the detector daily against every subscription and alert on anything HIGH. It's read-only and needs only read access. This is the control that catches the dangle the day the child zone is deleted, instead of whenever someone notices the malware being served under your name.
 
 3. **Prefer records over child zones.** A lot of subdomains don't need their own zone at all. Put the records directly in the parent and the delegation-dangle risk doesn't exist, because there's no delegation. Delegate only when a subtree genuinely needs independent management.
 
@@ -92,7 +92,7 @@ Both mistakes have the same flavor as [the one I keep writing about](/2026/07/13
 
 ## The part that stays with me
 
-What bothers me most about an incident like this isn't the gambling site. It's how little the attacker needs, and how much it looks like nothing while it's wrong. There's no alert to miss, because from the inside everything was deleted and quiet. The vulnerability isn't a system that's exposed, it's a system that's *gone*, and the record that remembers it is the liability. We spend enormous effort watching the things we run. This is a reminder to watch the things we've stopped running, because the names outlive them, and a name that points at nothing is an invitation addressed to whoever finds it first.
+What bothers me most about an incident like this isn't the payload itself. It's how little the attacker needs, and how much it looks like nothing while it's wrong. There's no alert to miss, because from the inside everything was deleted and quiet. The vulnerability isn't a system that's exposed, it's a system that's *gone*, and the record that remembers it is the liability. We spend enormous effort watching the things we run. This is a reminder to watch the things we've stopped running, because the names outlive them, and a name that points at nothing is an invitation addressed to whoever finds it first.
 
 The discipline is one sentence, and it's worth ending on: the name dies first, or it doesn't die at all.
 
