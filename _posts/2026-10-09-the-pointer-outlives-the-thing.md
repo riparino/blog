@@ -1,6 +1,6 @@
 ---
 title: "The Pointer Outlives the Thing"
-date: 2026-10-10 05:00:00 -0700
+date: 2026-10-09 05:00:00 -0700
 tags: [dns, subdomain-takeover, detection-engineering, cloud security, security operations]
 ---
 
