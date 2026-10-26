@@ -4,13 +4,13 @@ date: 2026-10-26 05:00:00 -0700
 tags: [homelab, self-hosting, vps, tailscale, docker, plex, security]
 ---
 
-I paid $56 for a year of a KVM VPS with 12 CPU cores, about 48 GB of RAM, around 700 GB of disk, and nested virtualization switched on. I'm not going to quote a hyperscaler price, because it'll be stale by the time you read this. Price an instance with those specs by the month and do the arithmetic yourself. It's many times more. Mine works out to under five dollars a month.
+I paid ~$350 for a year of a KVM VPS with 12 CPU cores, about 48 GB of RAM, around 700 GB of disk, and nested virtualization switched on. I'm not going to quote a hyperscaler price, because it'll be stale by the time you read this. Price an instance with those specs by the month and do the arithmetic yourself. It's many times more. Mine works out to under five dollars a month.
 
 By Sunday night it was running Plex, a torrent client that physically can't leak my server's IP, and a browser-based file manager, and almost none of it was reachable from the public internet. This post is the order I'd do it in if you've never self-hosted, plus the places it went sideways, which is the part most guides leave out. If you do this for a living, skip ahead to the traps. That's where the security details are.
 
 ## Why a VPS and not a box in the closet
 
-I already run Plex at home, so this wasn't about Plex. I wanted a machine with a real uplink and a stable public address, no fan noise, and nested virtualization, so I can run VMs inside it later for pentest labs (authorized engagements only, with a written scope).
+I already run Plex at home, so this wasn't about Plex. I wanted a machine with a real uplink and a stable public address, no fan noise, and nested virtualization, so I can run VMs inside it later for pentest "labs".
 The honest downsides: the provider's hypervisor can see everything on this box, so I don't put anything on it I'd be wrecked to lose to them. There's no GPU, so transcoding is CPU only. And 700 GB is a lot until it's a media library. Know those going in.
 
 ## Security first (about 30 minutes)
@@ -27,7 +27,7 @@ sudo ufw default deny incoming && sudo ufw allow OpenSSH && sudo ufw enable
 sudo reboot
 ```
 
-I gave `admin` passwordless sudo. That's a real tradeoff: the SSH key is the only thing standing between an attacker and root. But login is key-only and root already accepts the same kind of key, so the delta is small, and I'd rather not type a password forty times a day.
+I gave `admin` passwordless sudo. The SSH key is the only thing standing between an attacker and root... But login is key-only and root already accepts the same kind of key, so the delta is small, and I'd rather not type a password forty times a day.
 
 The SSH config goes in a drop-in file named `00-hardening.conf`, not in `sshd_config`. sshd takes the first value it sees for a setting, and cloud-init ships a `50-cloud-init.conf` that can quietly turn password auth back on. The `00-` prefix makes mine load first:
 
@@ -201,12 +201,12 @@ Inside qBittorrent I changed the temporary password, bound the network interface
 
 | Item | Cost | Notes |
 |---|---|---|
-| VPS (12 cores, ~48 GB, ~700 GB) | $56/month or less if you pay multiple years up front |
+| VPS (12 cores, ~48 GB, ~700 GB) | $56/month or less if you pay multiple years up front (I got 55% off) |
 | VPN (Private Internet Access) | ~$17/year | About $50 for a 3-year plan; required for the torrent stack |
 | Plex Pass (lifetime) | ~$150 one-time | Bought about ten years ago; covers remote playback on most apps |
 | Tailscale | $0 | Free tailnet, with my phone and everything else on it |
 | Domain (optional) | $9/year | One I already own for the blog, with DNS on Cloudflare. Not used by this server, so not in the total |
-| **Total (recurring)** | **~$689/year** | About $6 a month, plus the one-time Plex Pass |
+| **Total (recurring)** | **~$380year** | About $6 a month, plus the one-time Plex Pass |
 
 ## The checklist
 
