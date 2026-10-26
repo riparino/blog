@@ -1,6 +1,6 @@
 ---
 title: "12 Cores, 48 GB, One Weekend"
-date: 2026-10-27 05:00:00 -0700
+date: 2026-10-26 05:00:00 -0700
 tags: [homelab, self-hosting, vps, tailscale, docker, plex, security]
 ---
 
