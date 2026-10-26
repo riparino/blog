@@ -197,7 +197,6 @@ Inside qBittorrent I changed the temporary password, bound the network interface
 | VPN (Private Internet Access) | $<VPN_PRICE>/year | Required for the torrent stack |
 | Plex Pass (lifetime) | $<PLEX_PRICE> one-time | Covers remote playback on most apps; not an annual cost |
 | Tailscale | $0 | Free tailnet, with my phone and everything else on it |
-| Domain (later) | $<DOMAIN_PRICE>/year | For Caddy and TLS |
 | **Total** | **$<TOTAL>/year** | |
 
 ## The checklist
