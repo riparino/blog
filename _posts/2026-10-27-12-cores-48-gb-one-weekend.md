@@ -205,6 +205,7 @@ Inside qBittorrent I changed the temporary password, bound the network interface
 | VPN (Private Internet Access) | ~$17/year | About $50 for a 3-year plan; required for the torrent stack |
 | Plex Pass (lifetime) | ~$150 one-time | Bought about ten years ago; covers remote playback on most apps |
 | Tailscale | $0 | Free tailnet, with my phone and everything else on it |
+| Domain (optional) | $9/year | One I already own for the blog, with DNS on Cloudflare. Not used by this server, so not in the total |
 | **Total (recurring)** | **~$73/year** | About $6 a month, plus the one-time Plex Pass |
 
 ## The checklist
