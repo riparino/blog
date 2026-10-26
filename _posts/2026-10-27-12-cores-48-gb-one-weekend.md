@@ -106,11 +106,11 @@ When I want tailnet access I publish to the Tailscale IP on purpose: `-p <tailsc
 
 ### I pasted a live auth key
 
-I ran the Tailscale install with `--auth-key=tskey-...` inline, so it landed in shell history, and then I pasted the terminal output somewhere it didn't belong. Treat any key you've pasted as burned. Revoke it in the admin console (Settings → Keys) before you do anything else, and next time use an interactive login or a one-use key with a short expiry.
+I ran the Tailscale install with `--auth-key=tskey-...` inline, so it landed in shell history, and then I pasted the terminal output somewhere it didn't belong. I'd set the key to expire at the shortest interval Tailscale offers, so it killed itself, but I didn't know that was enough until it was. Treat any key you've pasted as burned. Revoke it in the admin console (Settings → Keys) right away, and next time use an interactive login or a one-use key with a short expiry.
 
 ### Plex said it was fine and wasn't
 
-I started Plex, signed in, and saw only my home server, with none of the library options you'd expect. The server log had the real answer: the new server's call to plex.tv was failing with an HTTP 403, so plex.tv never listed it. The fix was to stop the container, move the config directory aside, drop the `ADVERTISE_IP` variable, and claim again with a fresh token. It registered immediately. I changed two things at once, so I can't tell you which one mattered, and I'd rather say that than invent a cause.
+I started Plex, signed in, and saw only my home server, with none of the library options you'd expect. The server log had the real answer: the new server's call to plex.tv was failing with an HTTP 403, so plex.tv never listed it. The fix was to stop the container, move the config directory aside, drop the `ADVERTISE_IP` variable, and claim again with a fresh token. It registered immediately, and `ADVERTISE_IP` is staying out of my compose file. I changed two things at once, so I can't tell you which one mattered, and I'd rather say that than invent a cause.
 
 ### 46 GB used, zero processes
 
@@ -175,7 +175,7 @@ printf "PIA_USER='%s'\nPIA_PASS='%s'\n" "$U" "$P" > .env
 chmod 600 .env; unset U P
 ```
 
-My first region, Toronto, died with `TLS key negotiation failed` and never connected. Switching to Vancouver worked right away. Pick a region that supports port forwarding. Then I verified the thing I care about: `docker exec gluetun wget -qO- https://ipinfo.io/ip` returned the VPN's address, not the server's. (MFA on the account wasn't a problem for the OpenVPN login.)
+My first region, Toronto, died with `TLS key negotiation failed` and never connected. Forcing TCP (`OPENVPN_PROTOCOL: tcp`) worked, and so did switching to a different region. I stayed on Vancouver. Pick a region that supports port forwarding. Then I verified the thing I care about: `docker exec gluetun wget -qO- https://ipinfo.io/ip` returned the VPN's address, not the server's. (MFA on the account wasn't a problem for the OpenVPN login.)
 
 Inside qBittorrent I changed the temporary password, bound the network interface to `tun0` as a second kill switch, set the incoming port to the one the VPN forwards, turned UPnP off, and switched to automatic torrent management with categories that map to `/downloads/<category>`.
 
@@ -185,7 +185,7 @@ Inside qBittorrent I changed the temporary password, bound the network interface
 
 **Done and verified:** baseline hardening, key-only SSH through 1Password, Tailscale with the exit node, Docker bound to localhost by default, Plex claimed and registered with libraries, qBittorrent behind a verified VPN IP, and File Browser.
 
-**Not verified:** Plex from outside my tailnet. That needs port 32400 open, and most apps want Plex Pass or a Remote Watch Pass for remote playback. I also haven't rebooted with everything running to confirm the containers bound to the Tailscale IP come back after Tailscale does.
+**Not verified:** Plex from outside my tailnet. That needs port 32400 open. Most apps want a Plex Pass or a Remote Watch Pass for remote playback, and I have a lifetime Plex Pass, so that part is covered. I also haven't rebooted with everything running to confirm the containers bound to the Tailscale IP come back after Tailscale does.
 
 **Planned:** Caddy with automatic TLS once I have a domain, Incus or libvirt for nested pentest VMs on an isolated network, Sonarr/Radarr/Prowlarr, Immich for photos, a file-sync app like Nextcloud, automatic container updates, and a script to update qBittorrent's port when the forwarded one changes. Right now I copy that number by hand.
 
@@ -195,8 +195,8 @@ Inside qBittorrent I changed the temporary password, bound the network interface
 |---|---|---|
 | VPS (12 cores, ~48 GB, ~700 GB) | $56/year | About $4.67 a month |
 | VPN (Private Internet Access) | $<VPN_PRICE>/year | Required for the torrent stack |
-| Plex Pass (optional) | $<PLEX_PRICE> | Needed for remote playback on most apps |
-| Tailscale | $<TAILSCALE_PRICE> | Free personal tier at the time of writing |
+| Plex Pass (lifetime) | $<PLEX_PRICE> one-time | Covers remote playback on most apps; not an annual cost |
+| Tailscale | $0 | Free tailnet, with my phone and everything else on it |
 | Domain (later) | $<DOMAIN_PRICE>/year | For Caddy and TLS |
 | **Total** | **$<TOTAL>/year** | |
 
@@ -218,7 +218,3 @@ If you want to copy this, here's the order:
 12. Revoke every key you've pasted anywhere.
 
 The thing I keep coming back to is how little of this was hard. Nearly every problem was a default doing something I hadn't asked it to: Docker bypassing the firewall, an SSH agent offering every key, a drop-in file loading in the wrong order. A cheap server and a free weekend is plenty. The part that takes discipline is verifying each default instead of assuming it.
-
----
-
-*Disclosure: written with AI assistance. The setup, the mistakes, and the opinions are mine.*
