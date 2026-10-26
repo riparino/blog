@@ -60,7 +60,7 @@ Host homelab
 
 If you need a different address, override only that: `ssh -o HostName=<tailscale-ip> homelab`.
 
-- **The agent sometimes refuses to sign.** Unlock the vault or approve the prompt. It looks exactly like a network problem and isn't.
+- **The 1Password agent (on Windows 11 at least) sometimes refuses to sign.** Unlock the vault or approve the prompt. It looks exactly like a network problem and isn't.
 
 ### Tailscale, so nothing private is public
 
@@ -106,7 +106,7 @@ When I want tailnet access I publish to the Tailscale IP on purpose: `-p <tailsc
 
 ### I pasted a live auth key
 
-I ran the Tailscale install with `--auth-key=tskey-...` inline, so it landed in shell history, and then I pasted the terminal output somewhere it didn't belong. I'd set the key to expire at the shortest interval Tailscale offers, so it killed itself, but I didn't know that was enough until it was. Treat any key you've pasted as burned. Revoke it in the admin console (Settings → Keys) right away, and next time use an interactive login or a one-use key with a short expiry.
+I ran the Tailscale install with `--auth-key=tskey-...` value. I recommend storing this safely or transmitting it safely during compose.
 
 ### Plex said it was fine and wasn't
 
