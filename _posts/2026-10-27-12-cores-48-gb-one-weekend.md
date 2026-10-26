@@ -177,6 +177,14 @@ chmod 600 .env; unset U P
 
 My first region, Toronto, died with `TLS key negotiation failed` and never connected. Forcing TCP (`OPENVPN_PROTOCOL: tcp`) worked, and so did switching to a different region. I stayed on Vancouver. Pick a region that supports port forwarding. Then I verified the thing I care about: `docker exec gluetun wget -qO- https://ipinfo.io/ip` returned the VPN's address, not the server's. (MFA on the account wasn't a problem for the OpenVPN login.)
 
+If you're picking a provider, this is the glue Gluetun needs from them, and it's a short list:
+
+- **Gluetun has to support them.** It ships with built-in server lists for most of the big names, and the `VPN_SERVICE_PROVIDER` value is the only line that changes. Check its wiki for your provider's exact settings.
+- **They have to hand out credentials for third-party clients.** You need OpenVPN or WireGuard details, not just their app. Mine is a separate username and password. Some providers want a WireGuard private key instead, and some use an account number.
+- **Port forwarding, if you want to seed properly.** Without it you can download fine but you'll be a poor peer. Some providers offer it only on certain servers, and some don't offer it at all.
+- **They have to allow P2P** on the servers you pick, and have a logging policy you can live with.
+- **Your VPS has to give the container a tunnel device.** That means `/dev/net/tun` and the `NET_ADMIN` capability, which is what those two lines in the compose file are for. They worked on my KVM box without anything special, but check yours.
+
 Inside qBittorrent I changed the temporary password, bound the network interface to `tun0` as a second kill switch, set the incoming port to the one the VPN forwards, turned UPnP off, and switched to automatic torrent management with categories that map to `/downloads/<category>`.
 
 **File Browser** closes the loop. It's a web file manager bound to the Tailscale IP and mounted on `/srv`, so I move finished downloads from `downloads/<category>` to `media/<category>` in a browser. The move is instant, because it's the same disk and the same mount, and Plex picks the files up on a library scan.
@@ -216,4 +224,4 @@ If you want to copy this, here's the order:
 11. Run your torrent client inside a VPN container, publish its UI only on the tailnet, and verify the public IP from inside the container.
 12. Revoke every key you've pasted anywhere.
 
-The thing I keep coming back to is how little of this was hard. Nearly every problem was a default doing something I hadn't asked it to: Docker bypassing the firewall, an SSH agent offering every key, a drop-in file loading in the wrong order. A cheap server and a free weekend is plenty. The part that takes discipline is verifying each default instead of assuming it.
+The thing I keep coming back to is how little of this was hard. Nearly every problem was a default doing something I hadn't asked it to: Docker bypassing the firewall, an SSH agent offering every key, a drop-in file loading in the wrong order. A cheap server and a free weekend is plenty, and I'd love for more people to try this. Keep it to media you're allowed to have (Linux ISOs, obviously), and verify each default instead of assuming it. That second part is the only one that takes discipline.
