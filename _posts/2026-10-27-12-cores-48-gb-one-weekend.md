@@ -195,7 +195,7 @@ Inside qBittorrent I changed the temporary password, bound the network interface
 
 **Not verified:** Plex from outside my tailnet. That needs port 32400 open. Most apps want a Plex Pass or a Remote Watch Pass for remote playback, and I have a lifetime Plex Pass, so that part is covered. I also haven't rebooted with everything running to confirm the containers bound to the Tailscale IP come back after Tailscale does.
 
-**Planned:** Caddy with automatic TLS once I have a domain, Incus or libvirt for nested pentest VMs on an isolated network, Sonarr/Radarr/Prowlarr, Immich for photos, a file-sync app like Nextcloud, automatic container updates, and a script to update qBittorrent's port when the forwarded one changes. Right now I copy that number by hand.
+**Planned:** Incus or libvirt for nested pentest VMs on an isolated network, Sonarr/Radarr/Prowlarr, Immich for photos, a file-sync app like Nextcloud, automatic container updates, and a script to update qBittorrent's port when the forwarded one changes. Right now I copy that number by hand.
 
 ## What it costs
 
