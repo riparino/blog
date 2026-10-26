@@ -4,7 +4,7 @@ date: 2026-10-27 05:00:00 -0700
 tags: [homelab, self-hosting, vps, tailscale, docker, plex, security]
 ---
 
-I paid roughly $<PRICE> for a year of a KVM VPS with 12 CPU cores, about 48 GB of RAM, around 700 GB of disk, and nested virtualization switched on. I'm not going to quote a hyperscaler price, because it'll be stale by the time you read this. Price an instance with those specs by the month and do the arithmetic yourself. It's many times more.
+I paid $56 for a year of a KVM VPS with 12 CPU cores, about 48 GB of RAM, around 700 GB of disk, and nested virtualization switched on. I'm not going to quote a hyperscaler price, because it'll be stale by the time you read this. Price an instance with those specs by the month and do the arithmetic yourself. It's many times more. Mine works out to under five dollars a month.
 
 By Sunday night it was running Plex, a torrent client that physically can't leak my server's IP, and a browser-based file manager, and almost none of it was reachable from the public internet. This post is the order I'd do it in if you've never self-hosted, plus the places it went sideways, which is the part most guides leave out. If you do this for a living, skip ahead to the traps. That's where the security details are.
 
@@ -193,7 +193,7 @@ Inside qBittorrent I changed the temporary password, bound the network interface
 
 | Item | Cost | Notes |
 |---|---|---|
-| VPS (12 cores, ~48 GB, ~700 GB) | $<PRICE>/year | About $<PRICE/12> a month |
+| VPS (12 cores, ~48 GB, ~700 GB) | $56/year | About $4.67 a month |
 | VPN (Private Internet Access) | $<VPN_PRICE>/year | Required for the torrent stack |
 | Plex Pass (optional) | $<PLEX_PRICE> | Needed for remote playback on most apps |
 | Tailscale | $<TAILSCALE_PRICE> | Free personal tier at the time of writing |
