@@ -194,10 +194,10 @@ Inside qBittorrent I changed the temporary password, bound the network interface
 | Item | Cost | Notes |
 |---|---|---|
 | VPS (12 cores, ~48 GB, ~700 GB) | $56/year | About $4.67 a month |
-| VPN (Private Internet Access) | $<VPN_PRICE>/year | Required for the torrent stack |
+| VPN (Private Internet Access) | ~$17/year | About $50 for a 3-year plan; required for the torrent stack |
 | Plex Pass (lifetime) | $<PLEX_PRICE> one-time | Covers remote playback on most apps; not an annual cost |
 | Tailscale | $0 | Free tailnet, with my phone and everything else on it |
-| **Total** | **$<TOTAL>/year** | |
+| **Total (recurring)** | **~$73/year** | About $6 a month, plus the one-time Plex Pass |
 
 ## The checklist
 
